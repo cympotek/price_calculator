@@ -1,39 +1,47 @@
 import { useState } from 'react';
 
 const PriceCalculator = () => {
-  const [quantity, setQuantity] = useState(1000);
-  const [specialProcessing, setSpecialProcessing] = useState({
-    goldStamping: false,
-    embossing: false,
-    dottedLine: false,
-    variableCode: false,
-    laserScratch: false,
-    tmaPattern: false,
-    visualCode: false,
-    antiCopyPattern: false,
-    invisibleInk: false
+  const [formData, setFormData] = useState({
+    basicLabel: {
+      paperType: 'waterproof', // 銅板防水貼紙
+      size: 'standard', // 90mm*120mm * 2
+      shape: 'rectangle', // 矩形
+      coating: 'glossy', // 亮膜
+    },
+    specialProcessing: {
+      goldStamp: false,
+      embossing: false,
+      dottedLine: false,
+      variableCode: false
+    },
+    printingSecurity: {
+      laserScratch: false,
+      tmaPattern: false,
+      visualCode: false,
+      antiCopyPattern: false,
+      invisibleInk: false
+    },
+    digitalServices: {
+      platform: false,
+      domainBinding: false,
+      codeQuantity: 1000
+    },
+    certification: {
+      blockchainCert: false
+    }
   });
-  const [digitalService, setDigitalService] = useState({
-    enabled: false,
-    platformFee: false,
-    domainBinding: false
-  });
-  const [certification, setCertification] = useState(false);
 
   const calculateBasePrice = () => {
-    return quantity * 0.5; // 基本标签费用：每张 $0.5
+    return formData.digitalServices.codeQuantity * 0.5; // 基本標籤費用：每張 $0.5
   };
 
   const calculateDigitalServicePrice = () => {
-    if (!digitalService.enabled) return 0;
+    if (!formData.digitalServices.platform) return 0;
     
     let price = 0;
-    // 平台费用
-    if (digitalService.platformFee) price += 1520;
-    // 特定网域绑定
-    if (digitalService.domainBinding) price += 155;
+    const quantity = formData.digitalServices.codeQuantity;
     
-    // UID 码费用计算
+    // UID 碼費用計算
     let codePrice;
     if (quantity <= 10000) {
       codePrice = 0.2;
@@ -45,16 +53,17 @@ const PriceCalculator = () => {
       codePrice = 0.06;
     }
     
-    // 如果年购买量超过5万张，免平台费用
-    if (quantity >= 50000 && digitalService.platformFee) {
-      price -= 1520;
+    // 平台費用和網域綁定
+    if (quantity < 50000) { // 年購買量未達5萬張需收平台費用
+      if (formData.digitalServices.platform) price += 1520;
     }
+    if (formData.digitalServices.domainBinding) price += 155;
     
     return price + (quantity * codePrice);
   };
 
   const calculateCertificationPrice = () => {
-    return certification ? quantity * 0.32 : 0;
+    return formData.certification.blockchainCert ? formData.digitalServices.codeQuantity * 0.32 : 0;
   };
 
   const totalPrice = () => {
@@ -63,38 +72,154 @@ const PriceCalculator = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Wine Label Purchase Calculator</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Label Price Calculator</h2>
       
-      {/* Quantity Selection */}
+      {/* Basic Label Options */}
       <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Order Quantity</label>
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Basic Label</h3>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="relative">
+            <select
+              value={formData.basicLabel.paperType}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicLabel: {
+                  ...prev.basicLabel,
+                  paperType: e.target.value
+                }
+              }))}
+              className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
+            >
+              <option value="waterproof">Waterproof Paper</option>
+            </select>
+            <label className="absolute left-0 -top-3.5 text-gray-600 text-sm">Paper Type</label>
+          </div>
+          
+          <div className="relative">
+            <select
+              value={formData.basicLabel.size}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicLabel: {
+                  ...prev.basicLabel,
+                  size: e.target.value
+                }
+              }))}
+              className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
+            >
+              <option value="standard">90mm*120mm * 2</option>
+            </select>
+            <label className="absolute left-0 -top-3.5 text-gray-600 text-sm">Size</label>
+          </div>
+          
+          <div className="relative">
+            <select
+              value={formData.basicLabel.shape}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicLabel: {
+                  ...prev.basicLabel,
+                  shape: e.target.value
+                }
+              }))}
+              className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
+            >
+              <option value="rectangle">Rectangle</option>
+              <option value="square">Square</option>
+            </select>
+            <label className="absolute left-0 -top-3.5 text-gray-600 text-sm">Shape</label>
+          </div>
+          
+          <div className="relative">
+            <select
+              value={formData.basicLabel.coating}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicLabel: {
+                  ...prev.basicLabel,
+                  coating: e.target.value
+                }
+              }))}
+              className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600"
+            >
+              <option value="glossy">Glossy</option>
+              <option value="matte">Matte</option>
+            </select>
+            <label className="absolute left-0 -top-3.5 text-gray-600 text-sm">Coating</label>
+          </div>
+        </div>
+        
+        <div className="relative">
+          <input
+            type="number"
+            value={formData.digitalServices.codeQuantity}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              digitalServices: {
+                ...prev.digitalServices,
+                codeQuantity: parseInt(e.target.value) || 0
+              }
+            }))}
+            placeholder="Enter quantity"
+            className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-blue-600"
+          />
+          <label className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
+            Order Quantity
+          </label>
+        </div>
       </div>
 
       {/* Special Processing Options */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-3">Special Processing</h3>
         <div className="grid grid-cols-2 gap-4">
-          {Object.entries(specialProcessing).map(([key, value]) => (
+          {Object.entries(formData.specialProcessing).map(([key, value]) => (
             <label key={key} className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={value}
-                onChange={() => setSpecialProcessing(prev => ({ ...prev, [key]: !prev[key] }))}
+                onChange={() => setFormData(prev => ({
+                  ...prev,
+                  specialProcessing: {
+                    ...prev.specialProcessing,
+                    [key]: !prev.specialProcessing[key]
+                  }
+                }))}
                 className="form-checkbox h-4 w-4 text-blue-600"
               />
               <span className="text-gray-700">
                 {{
-                  goldStamping: 'Gold/Silver Stamping',
+                  goldStamp: 'Gold/Silver Stamping',
                   embossing: 'Embossing',
                   dottedLine: 'Dotted Line',
-                  variableCode: 'Variable Code',
+                  variableCode: 'Variable Code (Digital Services Required)'
+                }[key]}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Printing Security Options */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Printing Security</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(formData.printingSecurity).map(([key, value]) => (
+            <label key={key} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={value}
+                onChange={() => setFormData(prev => ({
+                  ...prev,
+                  printingSecurity: {
+                    ...prev.printingSecurity,
+                    [key]: !prev.printingSecurity[key]
+                  }
+                }))}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <span className="text-gray-700">
+                {{
                   laserScratch: 'Laser Scratch',
                   tmaPattern: 'TMA Pattern',
                   visualCode: 'Visual Code',
@@ -107,82 +232,74 @@ const PriceCalculator = () => {
         </div>
       </div>
 
-      {/* Digital Services */}
+      {/* Digital Services Options */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-3">Digital Services</h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-4">
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={digitalService.enabled}
-              onChange={() => setDigitalService(prev => ({ ...prev, enabled: !prev.enabled }))}
+              checked={formData.digitalServices.platform}
+              onChange={() => setFormData(prev => ({
+                ...prev,
+                digitalServices: {
+                  ...prev.digitalServices,
+                  platform: !prev.digitalServices.platform
+                }
+              }))}
               className="form-checkbox h-4 w-4 text-blue-600"
             />
-            <span className="text-gray-700">Enable UID Digital Anti-counterfeiting Service</span>
+            <span className="text-gray-700">Platform Service</span>
           </label>
-          {digitalService.enabled && (
-            <div className="ml-6 space-y-2">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={digitalService.platformFee}
-                  onChange={() => setDigitalService(prev => ({ ...prev, platformFee: !prev.platformFee }))}
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                />
-                <span className="text-gray-700">Platform Fee ($1,520/year)</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={digitalService.domainBinding}
-                  onChange={() => setDigitalService(prev => ({ ...prev, domainBinding: !prev.domainBinding }))}
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                />
-                <span className="text-gray-700">Domain Binding ($155)</span>
-              </label>
-            </div>
-          )}
+
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={formData.digitalServices.domainBinding}
+              onChange={() => setFormData(prev => ({
+                ...prev,
+                digitalServices: {
+                  ...prev.digitalServices,
+                  domainBinding: !prev.digitalServices.domainBinding
+                }
+              }))}
+              className="form-checkbox h-4 w-4 text-blue-600"
+            />
+            <span className="text-gray-700">Domain Binding</span>
+          </label>
         </div>
       </div>
 
-      {/* Certification Services */}
+      {/* Certification Options */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-3">Certification Services</h3>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={certification}
-            onChange={() => setCertification(!certification)}
-            className="form-checkbox h-4 w-4 text-blue-600"
-          />
-          <span className="text-gray-700">Certification Mark + Blockchain ($0.32/piece)</span>
-        </label>
+        <div className="grid grid-cols-2 gap-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={formData.certification.blockchainCert}
+              onChange={() => setFormData(prev => ({
+                ...prev,
+                certification: {
+                  ...prev.certification,
+                  blockchainCert: !prev.certification.blockchainCert
+                }
+              }))}
+              className="form-checkbox h-4 w-4 text-blue-600"
+            />
+            <span className="text-gray-700">Blockchain Certification</span>
+          </label>
+        </div>
       </div>
 
-      {/* Price Summary */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">Price Calculation</h3>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <span>Basic Label Cost:</span>
-            <span>${calculateBasePrice().toFixed(2)}</span>
-          </div>
-          {digitalService.enabled && (
-            <div className="flex justify-between">
-              <span>Digital Service Cost:</span>
-              <span>${calculateDigitalServicePrice().toFixed(2)}</span>
-            </div>
-          )}
-          {certification && (
-            <div className="flex justify-between">
-              <span>Certification Service Cost:</span>
-              <span>${calculateCertificationPrice().toFixed(2)}</span>
-            </div>
-          )}
-          <div className="flex justify-between font-bold text-lg">
-            <span>Total:</span>
-            <span>${totalPrice().toFixed(2)}</span>
-          </div>
+      {/* Total Price Display */}
+      <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Price</h3>
+        <p className="text-3xl font-bold text-blue-600">${totalPrice().toFixed(2)}</p>
+        <div className="mt-2 text-sm text-gray-600">
+          <p>Base Price: ${calculateBasePrice().toFixed(2)}</p>
+          <p>Digital Services: ${calculateDigitalServicePrice().toFixed(2)}</p>
+          <p>Certification: ${calculateCertificationPrice().toFixed(2)}</p>
         </div>
       </div>
     </div>
