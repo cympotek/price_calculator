@@ -63,11 +63,11 @@ const PriceCalculator = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">酒標採購計算機</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Wine Label Purchase Calculator</h2>
       
-      {/* 数量选择 */}
+      {/* Quantity Selection */}
       <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-bold mb-2">訂購數量</label>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Order Quantity</label>
         <input
           type="number"
           min="1"
@@ -77,9 +77,9 @@ const PriceCalculator = () => {
         />
       </div>
 
-      {/* 特殊加工选项 */}
+      {/* Special Processing Options */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">特殊加工</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Special Processing</h3>
         <div className="grid grid-cols-2 gap-4">
           {Object.entries(specialProcessing).map(([key, value]) => (
             <label key={key} className="flex items-center space-x-2">
@@ -91,15 +91,15 @@ const PriceCalculator = () => {
               />
               <span className="text-gray-700">
                 {{
-                  goldStamping: '燙金/燙銀',
-                  embossing: '打凸',
-                  dottedLine: '虛線',
-                  variableCode: '變動碼',
-                  laserScratch: '雷射刮膜',
-                  tmaPattern: 'TMA紋路',
-                  visualCode: '視覺碼',
-                  antiCopyPattern: '防複印底紋',
-                  invisibleInk: '隱形油墨'
+                  goldStamping: 'Gold/Silver Stamping',
+                  embossing: 'Embossing',
+                  dottedLine: 'Dotted Line',
+                  variableCode: 'Variable Code',
+                  laserScratch: 'Laser Scratch',
+                  tmaPattern: 'TMA Pattern',
+                  visualCode: 'Visual Code',
+                  antiCopyPattern: 'Anti-Copy Pattern',
+                  invisibleInk: 'Invisible Ink'
                 }[key]}
               </span>
             </label>
@@ -107,9 +107,9 @@ const PriceCalculator = () => {
         </div>
       </div>
 
-      {/* 数位服务选项 */}
+      {/* Digital Services */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">數位服務</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Digital Services</h3>
         <div className="space-y-2">
           <label className="flex items-center space-x-2">
             <input
@@ -118,7 +118,7 @@ const PriceCalculator = () => {
               onChange={() => setDigitalService(prev => ({ ...prev, enabled: !prev.enabled }))}
               className="form-checkbox h-4 w-4 text-blue-600"
             />
-            <span className="text-gray-700">啟用 UID 數位防偽服務</span>
+            <span className="text-gray-700">Enable UID Digital Anti-counterfeiting Service</span>
           </label>
           {digitalService.enabled && (
             <div className="ml-6 space-y-2">
@@ -129,7 +129,7 @@ const PriceCalculator = () => {
                   onChange={() => setDigitalService(prev => ({ ...prev, platformFee: !prev.platformFee }))}
                   className="form-checkbox h-4 w-4 text-blue-600"
                 />
-                <span className="text-gray-700">平台費用 ($1,520/年)</span>
+                <span className="text-gray-700">Platform Fee ($1,520/year)</span>
               </label>
               <label className="flex items-center space-x-2">
                 <input
@@ -138,16 +138,16 @@ const PriceCalculator = () => {
                   onChange={() => setDigitalService(prev => ({ ...prev, domainBinding: !prev.domainBinding }))}
                   className="form-checkbox h-4 w-4 text-blue-600"
                 />
-                <span className="text-gray-700">特定網域綁定 ($155)</span>
+                <span className="text-gray-700">Domain Binding ($155)</span>
               </label>
             </div>
           )}
         </div>
       </div>
 
-      {/* 认证服务选项 */}
+      {/* Certification Services */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">認證服務</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Certification Services</h3>
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -155,32 +155,32 @@ const PriceCalculator = () => {
             onChange={() => setCertification(!certification)}
             className="form-checkbox h-4 w-4 text-blue-600"
           />
-          <span className="text-gray-700">認證標章+區塊鏈 ($0.32/張)</span>
+          <span className="text-gray-700">Certification Mark + Blockchain ($0.32/piece)</span>
         </label>
       </div>
 
-      {/* 价格总结 */}
+      {/* Price Summary */}
       <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-3">價格試算</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Price Calculation</h3>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span>基本標籤費用：</span>
+            <span>Basic Label Cost:</span>
             <span>${calculateBasePrice().toFixed(2)}</span>
           </div>
           {digitalService.enabled && (
             <div className="flex justify-between">
-              <span>數位服務費用：</span>
+              <span>Digital Service Cost:</span>
               <span>${calculateDigitalServicePrice().toFixed(2)}</span>
             </div>
           )}
           {certification && (
             <div className="flex justify-between">
-              <span>認證服務費用：</span>
+              <span>Certification Service Cost:</span>
               <span>${calculateCertificationPrice().toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between font-bold text-lg">
-            <span>總計：</span>
+            <span>Total:</span>
             <span>${totalPrice().toFixed(2)}</span>
           </div>
         </div>
